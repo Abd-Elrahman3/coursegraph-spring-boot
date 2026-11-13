@@ -1,0 +1,27 @@
+"""Target schema. Resolver implementations are learner work (D4)."""
+type Query {
+  courses(first: Int = 20, after: String): CourseConnection!
+  course(id: ID!): Course
+  myEnrollments(first: Int = 20, after: String): EnrollmentConnection!
+}
+type Mutation {
+  createCourse(input: CreateCourseInput!): CoursePayload!
+  publishCourse(input: PublishCourseInput!): CoursePayload!
+  enroll(input: EnrollInput!): EnrollmentPayload!
+  completeLesson(input: CompleteLessonInput!): EnrollmentPayload!
+}
+enum CourseStatus { DRAFT PUBLISHED ARCHIVED }
+type Course { id: ID!, title: String!, status: CourseStatus!, lessons: [Lesson!]!, enrollmentCount: Int! }
+type Lesson { id: ID!, title: String!, position: Int! }
+type Enrollment { id: ID!, course: Course!, completedLessons: [Lesson!]!, progressPercent: String! }
+type CourseEdge { cursor: String!, node: Course! }
+type CourseConnection { edges: [CourseEdge!]!, pageInfo: PageInfo! }
+type EnrollmentEdge { cursor: String!, node: Enrollment! }
+type EnrollmentConnection { edges: [EnrollmentEdge!]!, pageInfo: PageInfo! }
+type PageInfo { endCursor: String, hasNextPage: Boolean! }
+input CreateCourseInput { title: String!, clientMutationId: String }
+input PublishCourseInput { id: ID!, clientMutationId: String }
+input EnrollInput { courseId: ID!, clientMutationId: String }
+input CompleteLessonInput { enrollmentId: ID!, lessonId: ID!, clientMutationId: String }
+type CoursePayload { course: Course!, clientMutationId: String }
+type EnrollmentPayload { enrollment: Enrollment!, clientMutationId: String }

@@ -1,0 +1,765 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CourseGraph Target API",
+    "version": "1.0.0",
+    "description": "Target contract; implementation is intentionally unfinished. Markdown rules define details and additional failure cases."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "paths": {
+    "/graphql": {
+      "post": {
+        "operationId": "post_graphql",
+        "summary": "200 data/errors; 400 invalid document; 401 invalid token",
+        "description": "GraphQL {query,variables,operationName}; bearer tenant token; see docs/API_REQUIREMENTS.md for rule-level behavior.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 data/errors; 400 invalid document; 401 invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Exact shape specified in API_REQUIREMENTS.md and the operation summary."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "200 data/errors; 400 invalid document; 401 invalid token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "200 data/errors; 400 invalid document; 401 invalid token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  },
+                  "variables": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "operationName": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports": {
+      "post": {
+        "operationId": "post_api_v1_imports",
+        "summary": "202 {jobId,status}; 413 too large",
+        "description": "multipart CSV, max 5MiB; bearer instructor; see docs/API_REQUIREMENTS.md for rule-level behavior.",
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "202 {jobId,status}; 413 too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "202 {jobId,status}; 413 too large",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports/{jobId}": {
+      "get": {
+        "operationId": "get_api_v1_imports_jobId",
+        "summary": "200 {status,read,written,rejected,errorReportUrl}; 404",
+        "description": "bearer owner tenant/instructor; see docs/API_REQUIREMENTS.md for rule-level behavior.",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 {status,read,written,rejected,errorReportUrl}; 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "200 {status,read,written,rejected,errorReportUrl}; 404",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actuator/health/readiness": {
+      "get": {
+        "operationId": "get_actuator_health_readiness",
+        "summary": "200 ready; 503 dependencies unavailable",
+        "description": "operations access; see docs/API_REQUIREMENTS.md for rule-level behavior.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 ready; 503 dependencies unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Exact shape specified in API_REQUIREMENTS.md and the operation summary."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid request or authorization failure",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "200 ready; 503 dependencies unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Course": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "title",
+          "status",
+          "version"
+        ]
+      },
+      "Lesson": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "courseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "courseId",
+          "title",
+          "position"
+        ]
+      },
+      "Enrollment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "courseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "learnerSubject": {
+            "type": "string"
+          },
+          "enrolledAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "courseId",
+          "learnerSubject",
+          "enrolledAt"
+        ]
+      },
+      "Progress": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "enrollmentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lessonId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "tenantId",
+          "enrollmentId",
+          "lessonId",
+          "completedAt"
+        ]
+      },
+      "Problem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "fieldErrors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field",
+                "message"
+              ],
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "code"
+        ]
+      },
+      "CourseView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "LessonView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "position"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseView"
+          },
+          "completedLessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonView"
+            }
+          },
+          "progressPercent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "course",
+          "completedLessons",
+          "progressPercent"
+        ],
+        "additionalProperties": false
+      },
+      "PageInfo": {
+        "type": "object",
+        "properties": {
+          "endCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "endCursor",
+          "hasNextPage"
+        ],
+        "additionalProperties": false
+      },
+      "CourseEdge": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "node": {
+            "$ref": "#/components/schemas/CourseView"
+          }
+        },
+        "required": [
+          "cursor",
+          "node"
+        ],
+        "additionalProperties": false
+      },
+      "CourseConnection": {
+        "type": "object",
+        "properties": {
+          "edges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CourseEdge"
+            }
+          },
+          "pageInfo": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        },
+        "required": [
+          "edges",
+          "pageInfo"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentEdge": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "node": {
+            "$ref": "#/components/schemas/EnrollmentView"
+          }
+        },
+        "required": [
+          "cursor",
+          "node"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentConnection": {
+        "type": "object",
+        "properties": {
+          "edges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnrollmentEdge"
+            }
+          },
+          "pageInfo": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        },
+        "required": [
+          "edges",
+          "pageInfo"
+        ],
+        "additionalProperties": false
+      },
+      "CoursePayload": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "$ref": "#/components/schemas/CourseView"
+          },
+          "clientMutationId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "course",
+          "clientMutationId"
+        ],
+        "additionalProperties": false
+      },
+      "EnrollmentPayload": {
+        "type": "object",
+        "properties": {
+          "enrollment": {
+            "$ref": "#/components/schemas/EnrollmentView"
+          },
+          "clientMutationId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "enrollment",
+          "clientMutationId"
+        ],
+        "additionalProperties": false
+      },
+      "ImportReceipt": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "ImportStatus": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "read": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "written": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rejected": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "errorReportUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "jobId",
+          "status",
+          "read",
+          "written",
+          "rejected",
+          "errorReportUrl"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

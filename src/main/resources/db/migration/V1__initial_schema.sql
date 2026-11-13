@@ -1,0 +1,4 @@
+-- TODO: M2 BR-201 BR-202
+-- Write the executable schema from docs/DATABASE_REQUIREMENTS.md before first startup.
+-- Include NOT NULL, foreign keys, unique/check constraints and required indexes.
+-- Once applied, do not edit this migration; add a new version.

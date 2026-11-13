@@ -1,0 +1,18 @@
+@base = http://localhost:8080
+@token = REPLACE_WITH_LOCAL_TEST_TOKEN
+
+# Target examples; routes are learner work and UUIDs must be replaced.
+
+### Nested query: <=4 SQL queries for this workload
+POST {{base}}/graphql
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"operationName":"CatalogPage","query":"query CatalogPage($first:Int!){courses(first:$first){edges{node{id title lessons{id title} enrollmentCount}} pageInfo{endCursor hasNextPage}}}","variables":{"first":20}}
+
+### Instructor creates a draft
+POST {{base}}/graphql
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"query":"mutation { createCourse(input:{title:\"Spring Foundations\",clientMutationId:\"example-1\"}) { course { id status } clientMutationId } }"}
