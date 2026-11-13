@@ -7,8 +7,8 @@ Java 21, Git, Docker Engine/Desktop with Compose v2, Python 3.10+ for the gate. 
 ## 2. Clone and read
 
 ```bash
-git clone https://github.com/Abd-Elrahman3/04-coursegraph-spring-boot.git
-cd 04-coursegraph-spring-boot
+git clone https://github.com/Abd-Elrahman3/coursegraph-spring-boot.git
+cd coursegraph-spring-boot
 git switch -c feature/m1-domain
 ```
 
